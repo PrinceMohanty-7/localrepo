@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Study Planner — Sign in to your productivity dashboard.">
+    <title>Sign In — Smart Study Planner</title>
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ========================
+       AUTH / LOGIN SCREEN
+       ======================== -->
+    <div class="auth-screen" id="auth-screen">
+        <!-- Animated Background Shapes -->
+        <div class="auth-bg-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <!-- Left Panel — Branding -->
+        <div class="auth-left">
+            <div class="brand-icon"><i class="ri-book-read-fill"></i></div>
+            <h1>Smart Study Planner</h1>
+            <p>Plan smarter, study harder. Your all-in-one productivity companion for academic success.</p>
+            <div class="auth-features">
+                <div class="auth-feature-item"><i class="ri-checkbox-circle-fill"></i> Manage Tasks & Deadlines</div>
+                <div class="auth-feature-item"><i class="ri-timer-flash-fill"></i> Built-in Pomodoro Timer</div>
+                <div class="auth-feature-item"><i class="ri-bar-chart-box-fill"></i> Track Daily Progress</div>
+                <div class="auth-feature-item"><i class="ri-notification-3-fill"></i> Smart Notifications</div>
+            </div>
+        </div>
+
+        <!-- Right Panel — Auth Card -->
+        <div class="auth-right">
+            <div class="auth-card">
+
+                <!-- Loading Overlay -->
+                <div class="auth-loading" id="auth-loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Verifying...</p>
+                </div>
+
+                <!-- ============================
+             STEP 1: Enter Phone Number
+             ============================ -->
+                <div id="step-phone">
+                    <h2>Welcome</h2>
+                    <p class="auth-subtitle">Enter your phone number to get started</p>
+
+                    <!-- Error Message -->
+                    <div class="auth-error" id="phone-error" style="display: none;">
+                        <i class="ri-error-warning-line"></i>
+                        <span id="phone-error-text"></span>
+                    </div>
+
+                    <form id="phone-form" class="auth-form">
+                        <div class="form-group">
+                            <label for="phone-number">Phone Number</label>
+                            <div class="phone-input-wrapper">
+                                <select id="country-code" class="form-control country-select">
+                                    <option value="+91">🇮🇳 +91</option>
+                                    <option value="+1">🇺🇸 +1</option>
+                                    <option value="+44">🇬🇧 +44</option>
+                                    <option value="+61">🇦🇺 +61</option>
+                                    <option value="+81">🇯🇵 +81</option>
+                                    <option value="+49">🇩🇪 +49</option>
+                                    <option value="+33">🇫🇷 +33</option>
+                                    <option value="+86">🇨🇳 +86</option>
+                                    <option value="+971">🇦🇪 +971</option>
+                                    <option value="+65">🇸🇬 +65</option>
+                                    <option value="+82">🇰🇷 +82</option>
+                                    <option value="+55">🇧🇷 +55</option>
+                                    <option value="+7">🇷🇺 +7</option>
+                                    <option value="+27">🇿🇦 +27</option>
+                                    <option value="+234">🇳🇬 +234</option>
+                                    <option value="+92">🇵🇰 +92</option>
+                                    <option value="+880">🇧🇩 +880</option>
+                                    <option value="+94">🇱🇰 +94</option>
+                                    <option value="+977">🇳🇵 +977</option>
+                                </select>
+                                <input type="tel" id="phone-number" class="form-control phone-input"
+                                    placeholder="Enter phone number" required pattern="[0-9]{7,15}"
+                                    title="Enter a valid phone number (7-15 digits)">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit-auth" id="btn-send-otp">
+                            <i class="ri-send-plane-fill"></i> Send OTP
+                        </button>
+                    </form>
+
+                    <div class="auth-footer" style="margin-top: 2rem;">
+                        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+                            <i class="ri-shield-check-fill" style="color: var(--success);"></i>
+                            Your data is stored securely on your device
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ============================
+             STEP 2: Verify OTP
+             ============================ -->
+                <div id="step-otp" style="display: none;">
+                    <h2>Verify OTP</h2>
+                    <p class="auth-subtitle">Enter the 6-digit code sent to <strong id="otp-phone-display"></strong></p>
+
+                    <!-- Error Message -->
+                    <div class="auth-error" id="otp-error" style="display: none;">
+                        <i class="ri-error-warning-line"></i>
+                        <span id="otp-error-text"></span>
+                    </div>
+
+                    <form id="otp-form" class="auth-form">
+                        <div class="form-group">
+                            <label>Verification Code</label>
+                            <div class="otp-inputs" id="otp-inputs">
+                                <input type="text" maxlength="1" class="otp-box" data-index="0" inputmode="numeric"
+                                    autofocus>
+                                <input type="text" maxlength="1" class="otp-box" data-index="1" inputmode="numeric">
+                                <input type="text" maxlength="1" class="otp-box" data-index="2" inputmode="numeric">
+                                <input type="text" maxlength="1" class="otp-box" data-index="3" inputmode="numeric">
+                                <input type="text" maxlength="1" class="otp-box" data-index="4" inputmode="numeric">
+                                <input type="text" maxlength="1" class="otp-box" data-index="5" inputmode="numeric">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-submit-auth" id="btn-verify-otp">
+                            <i class="ri-checkbox-circle-line"></i> Verify & Continue
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p style="margin-bottom: 0.5rem;">
+                            <button class="auth-toggle-mode" id="btn-resend-otp" disabled>Resend OTP <span
+                                    id="resend-timer">(30s)</span></button>
+                        </p>
+                        <button class="auth-toggle-mode" id="btn-change-number">
+                            <i class="ri-arrow-left-s-line"></i> Change number
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ============================
+             STEP 3: Set Name (new users)
+             ============================ -->
+                <div id="step-name" style="display: none;">
+                    <h2>Almost there!</h2>
+                    <p class="auth-subtitle">Tell us your name to personalize your experience</p>
+
+                    <form id="name-form" class="auth-form">
+                        <div class="form-group">
+                            <label for="user-fullname">Full Name</label>
+                            <input type="text" id="user-fullname" class="form-control" placeholder="e.g. John Doe"
+                                required minlength="2">
+                        </div>
+                        <button type="submit" class="btn-submit-auth">
+                            <i class="ri-arrow-right-line"></i> Get Started
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <script>
+        // =============================================
+        // PHONE NUMBER + OTP AUTHENTICATION SYSTEM
+        // =============================================
+        // This system uses LocalStorage for user persistence.
+        // OTP is generated locally and shown via a notification
+        // toast so the user can enter it — simulating a real
+        // SMS OTP flow with a professional UI.
+        // =============================================
+
+        // State
+        let generatedOTP = '';
+        let currentPhone = '';
+        let resendInterval = null;
+
+        // DOM Elements
+        const stepPhone = document.getElementById('step-phone');
+        const stepOtp = document.getElementById('step-otp');
+        const stepName = document.getElementById('step-name');
+        const authLoading = document.getElementById('auth-loading');
+
+        const phoneForm = document.getElementById('phone-form');
+        const otpForm = document.getElementById('otp-form');
+        const nameForm = document.getElementById('name-form');
+
+        const phoneError = document.getElementById('phone-error');
+        const phoneErrorText = document.getElementById('phone-error-text');
+        const otpError = document.getElementById('otp-error');
+        const otpErrorText = document.getElementById('otp-error-text');
+
+        const otpBoxes = document.querySelectorAll('.otp-box');
+
+        // =============================================
+        // CHECK IF ALREADY LOGGED IN
+        // =============================================
+        (function checkSession() {
+            const session = JSON.parse(localStorage.getItem('ssp_session'));
+            if (session && session.phone && session.name) {
+                // User is already authenticated — go to dashboard
+                window.location.href = 'index.html';
+            }
+        })();
+
+        // =============================================
+        // STEP 1: SEND OTP
+        // =============================================
+        phoneForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            phoneError.style.display = 'none';
+
+            const countryCode = document.getElementById('country-code').value;
+            const phoneNum = document.getElementById('phone-number').value.trim();
+
+            // Validate phone number (digits only, 7-15 length)
+            if (!/^\d{7,15}$/.test(phoneNum)) {
+                phoneErrorText.textContent = 'Please enter a valid phone number (digits only).';
+                phoneError.style.display = 'flex';
+                return;
+            }
+
+            currentPhone = countryCode + ' ' + phoneNum;
+
+            // Generate a random 6-digit OTP
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // Show loading briefly
+            authLoading.style.display = 'flex';
+
+            setTimeout(() => {
+                authLoading.style.display = 'none';
+
+                // Move to OTP step
+                stepPhone.style.display = 'none';
+                stepOtp.style.display = 'block';
+                document.getElementById('otp-phone-display').textContent = currentPhone;
+
+                // Focus the first OTP box
+                otpBoxes[0].focus();
+
+                // Show the OTP via notification (simulating SMS)
+                showNotification(
+                    `Your verification code is: <strong style="font-size: 1.1rem; letter-spacing: 3px;">${generatedOTP}</strong>`,
+                    'info',
+                    '📩 OTP Sent'
+                );
+
+                // Start resend timer
+                startResendTimer();
+
+            }, 1200); // Simulated delay
+        });
+
+        // =============================================
+        // OTP INPUT BEHAVIOR (auto-focus next box)
+        // =============================================
+        otpBoxes.forEach((box, index) => {
+            box.addEventListener('input', (e) => {
+                const val = e.target.value;
+                // Only allow digits
+                e.target.value = val.replace(/[^0-9]/g, '');
+
+                if (e.target.value && index < 5) {
+                    otpBoxes[index + 1].focus();
+                }
+            });
+
+            box.addEventListener('keydown', (e) => {
+                // Backspace — go to previous box
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpBoxes[index - 1].focus();
+                }
+            });
+
+            // Allow paste of full OTP
+            box.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                if (paste.length === 6) {
+                    otpBoxes.forEach((b, i) => {
+                        b.value = paste[i] || '';
+                    });
+                    otpBoxes[5].focus();
+                }
+            });
+        });
+
+        // =============================================
+        // STEP 2: VERIFY OTP
+        // =============================================
+        otpForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            otpError.style.display = 'none';
+
+            // Collect entered OTP from all 6 boxes
+            const enteredOTP = Array.from(otpBoxes).map(b => b.value).join('');
+
+            if (enteredOTP.length !== 6) {
+                otpErrorText.textContent = 'Please enter all 6 digits.';
+                otpError.style.display = 'flex';
+                return;
+            }
+
+            if (enteredOTP !== generatedOTP) {
+                otpErrorText.textContent = 'Invalid OTP. Please check and try again.';
+                otpError.style.display = 'flex';
+                // Shake the OTP boxes
+                document.getElementById('otp-inputs').style.animation = 'none';
+                setTimeout(() => {
+                    document.getElementById('otp-inputs').style.animation = 'shakeIn 0.4s ease';
+                }, 10);
+                return;
+            }
+
+            // OTP is correct!
+            authLoading.querySelector('p').textContent = 'Verified!';
+            authLoading.style.display = 'flex';
+
+            setTimeout(() => {
+                authLoading.style.display = 'none';
+
+                // Check if this phone number has an existing account
+                const users = JSON.parse(localStorage.getItem('ssp_users')) || [];
+                const existingUser = users.find(u => u.phone === currentPhone);
+
+                if (existingUser) {
+                    // Existing user — log them in directly
+                    localStorage.setItem('ssp_session', JSON.stringify(existingUser));
+                    showNotification(`Welcome back, ${existingUser.name}!`, 'success', '✅ Verified');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 800);
+                } else {
+                    // New user — ask for their name
+                    stepOtp.style.display = 'none';
+                    stepName.style.display = 'block';
+                    document.getElementById('user-fullname').focus();
+                }
+
+            }, 800);
+        });
+
+        // =============================================
+        // STEP 3: SET NAME (new users only)
+        // =============================================
+        nameForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('user-fullname').value.trim();
+            if (!name) return;
+
+            // Create the user account
+            const newUser = {
+                id: Date.now().toString(36) + Math.random().toString(36).substring(2, 9),
+                name: name,
+                phone: currentPhone,
+                createdAt: new Date().toISOString()
+            };
+
+            // Save to users list
+            const users = JSON.parse(localStorage.getItem('ssp_users')) || [];
+            users.push(newUser);
+            localStorage.setItem('ssp_users', JSON.stringify(users));
+
+            // Save session
+            localStorage.setItem('ssp_session', JSON.stringify(newUser));
+
+            showNotification(`Account created! Welcome, ${name}!`, 'success', '🎉 Welcome');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 800);
+        });
+
+        // =============================================
+        // RESEND OTP TIMER
+        // =============================================
+        function startResendTimer() {
+            const btn = document.getElementById('btn-resend-otp');
+            const timerSpan = document.getElementById('resend-timer');
+            let seconds = 30;
+
+            btn.disabled = true;
+            timerSpan.textContent = `(${seconds}s)`;
+
+            if (resendInterval) clearInterval(resendInterval);
+
+            resendInterval = setInterval(() => {
+                seconds--;
+                timerSpan.textContent = `(${seconds}s)`;
+
+                if (seconds <= 0) {
+                    clearInterval(resendInterval);
+                    btn.disabled = false;
+                    timerSpan.textContent = '';
+                }
+            }, 1000);
+        }
+
+        // Resend OTP
+        document.getElementById('btn-resend-otp').addEventListener('click', () => {
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            otpBoxes.forEach(b => b.value = '');
+            otpBoxes[0].focus();
+            otpError.style.display = 'none';
+
+            showNotification(
+                `New code: <strong style="font-size: 1.1rem; letter-spacing: 3px;">${generatedOTP}</strong>`,
+                'info',
+                '📩 OTP Resent'
+            );
+            startResendTimer();
+        });
+
+        // Change number — go back to step 1
+        document.getElementById('btn-change-number').addEventListener('click', () => {
+            stepOtp.style.display = 'none';
+            stepPhone.style.display = 'block';
+            otpBoxes.forEach(b => b.value = '');
+            otpError.style.display = 'none';
+            if (resendInterval) clearInterval(resendInterval);
+        });
+
+        // =============================================
+        // NOTIFICATION HELPER (for login page)
+        // =============================================
+        function showNotification(message, type = 'info', title = '') {
+            const container = document.getElementById('notification-container');
+            const icons = {
+                info: 'ri-information-line',
+                success: 'ri-checkbox-circle-line',
+                warning: 'ri-alarm-warning-line',
+                danger: 'ri-error-warning-line'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+        <i class="toast-icon ${icons[type] || icons.info}"></i>
+        <div class="toast-body">
+          ${title ? `<div class="toast-title">${title}</div>` : ''}
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()"><i class="ri-close-line"></i></button>
+      `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('exiting');
+                setTimeout(() => toast.remove(), 300);
+            }, 10000); // Keep OTP notifications visible for 10s
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Study Planner — Manage tasks, deadlines, and study sessions.">
+    <title>Dashboard — Smart Study Planner</title>
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ============================================
+       LOADING SCREEN (shown while checking session)
+       ============================================ -->
+    <div class="page-loader" id="page-loader">
+        <div class="spinner"></div>
+        <p>Loading your dashboard...</p>
+    </div>
+
+    <!-- ========================
+       APP CONTAINER (PROTECTED)
+       ======================== -->
+    <div class="app-container" id="app-container">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <i class="ri-book-read-fill"></i>
+                <span>Study Planner</span>
+            </div>
+
+            <!-- Authenticated User Profile -->
+            <div class="sidebar-user" id="sidebar-user">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">User</div>
+                    <div class="user-email" id="user-email">+91 XXXXXXXXXX</div>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active" data-target="dashboard-section">
+                    <i class="ri-dashboard-3-line"></i> Dashboard
+                </li>
+                <li data-target="tasks-section">
+                    <i class="ri-task-line"></i> Tasks
+                </li>
+                <li data-target="subjects-section">
+                    <i class="ri-book-3-line"></i> Subjects
+                </li>
+                <li data-target="timer-section">
+                    <i class="ri-timer-line"></i> Timer
+                </li>
+            </ul>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-bottom-item" id="theme-toggle">
+                    <i class="ri-moon-line"></i> Dark Mode
+                </div>
+                <div class="sidebar-bottom-item danger" id="btn-logout">
+                    <i class="ri-logout-box-r-line"></i> Sign Out
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="mobile-nav-toggle" id="mobile-nav-toggle"><i class="ri-menu-line"></i></button>
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="date-time" id="current-date-time">Loading...</div>
+                    <div class="motivational-quote" id="motivational-quote"></div>
+                </div>
+            </header>
+
+            <!-- ======================== DASHBOARD ======================== -->
+            <section class="page-section active" id="dashboard-section">
+                <div class="dashboard-grid">
+                    <div class="stats-section">
+                        <div class="stat-card">
+                            <div class="stat-icon primary"><i class="ri-list-check"></i></div>
+                            <div class="stat-info">
+                                <h3>Total Tasks</h3>
+                                <p id="total-tasks-stat">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon success"><i class="ri-checkbox-circle-line"></i></div>
+                            <div class="stat-info">
+                                <h3>Completed</h3>
+                                <p id="completed-tasks-stat">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon warning"><i class="ri-percent-line"></i></div>
+                            <div class="stat-info">
+                                <h3>Completion</h3>
+                                <p id="completion-rate-stat">0%</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon danger"><i class="ri-alarm-warning-line"></i></div>
+                            <div class="stat-info">
+                                <h3>Overdue</h3>
+                                <p id="overdue-tasks-stat">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card progress-card">
+                        <div class="progress-header">
+                            <span>Daily Progress Tracker</span>
+                            <span><span id="dashboard-total-tasks">0</span> Total Tasks</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="dashboard-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="card upcoming-card">
+                        <div class="card-header">
+                            <h2><i class="ri-calendar-event-line"></i> Upcoming Deadlines</h2>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Next 3 days</span>
+                        </div>
+                        <div class="upcoming-list" id="upcoming-list"></div>
+                    </div>
+
+                    <div class="card pomodoro-card">
+                        <div class="card-header">
+                            <h2><i class="ri-timer-flash-line"></i> Focus Time</h2>
+                        </div>
+                        <div class="timer-display" id="dashboard-timer-preview"
+                            style="font-size: 3rem; margin: 1rem 0;">25:00</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Start a focus
+                            session to boost productivity</p>
+                        <button class="btn btn-primary" style="width: 100%; justify-content: center;"
+                            id="goto-timer-btn">
+                            <i class="ri-play-line"></i> Open Timer
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================== TASKS ======================== -->
+            <section class="page-section" id="tasks-section">
+                <div class="dashboard-grid">
+                    <div class="card" style="grid-column: span 12;">
+                        <div class="card-header">
+                            <h2><i class="ri-add-circle-line"></i> Add New Task</h2>
+                        </div>
+                        <form id="task-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="task-title">Task Title *</label>
+                                    <input type="text" id="task-title" class="form-control"
+                                        placeholder="e.g. Complete Math Assignment" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="task-subject">Subject *</label>
+                                    <select id="task-subject" class="form-control" required></select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="task-deadline">Deadline *</label>
+                                    <input type="date" id="task-deadline" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="task-priority">Priority *</label>
+                                    <select id="task-priority" class="form-control" required>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low" selected>Low</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="task-desc">Description (Optional)</label>
+                                <textarea id="task-desc" class="form-control"
+                                    placeholder="Add extra details..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="ri-add-line"></i> Add Task</button>
+                        </form>
+                    </div>
+
+                    <div class="card" style="grid-column: span 12;">
+                        <div class="card-header" style="flex-wrap: wrap; gap: 0.75rem;">
+                            <h2><i class="ri-list-check"></i> All Tasks</h2>
+                            <div class="task-controls">
+                                <select id="filter-subject" class="form-control"></select>
+                                <select id="filter-priority" class="form-control">
+                                    <option value="">All Priorities</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                                <select id="sort-tasks" class="form-control">
+                                    <option value="deadline-asc">Deadline ↑</option>
+                                    <option value="deadline-desc">Deadline ↓</option>
+                                    <option value="priority">Priority</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="tasks-list" id="tasks-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================== SUBJECTS ======================== -->
+            <section class="page-section" id="subjects-section">
+                <div class="dashboard-grid">
+                    <div class="card" style="grid-column: span 4;">
+                        <div class="card-header">
+                            <h2><i class="ri-folder-add-line"></i> Add Subject</h2>
+                        </div>
+                        <form id="subject-form">
+                            <div class="form-group">
+                                <label for="subject-title">Subject Name</label>
+                                <input type="text" id="subject-title" class="form-control"
+                                    placeholder="e.g. Mathematics" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject-color">Color</label>
+                                <input type="color" id="subject-color" class="form-control" value="#6366f1"
+                                    style="height: 42px; padding: 3px; cursor: pointer;">
+                            </div>
+                            <button type="submit" class="btn btn-primary"
+                                style="width: 100%; justify-content: center;"><i class="ri-add-line"></i> Add
+                                Subject</button>
+                        </form>
+                    </div>
+                    <div class="card" style="grid-column: span 8;">
+                        <div class="card-header">
+                            <h2><i class="ri-book-3-line"></i> Your Subjects</h2>
+                        </div>
+                        <div class="subjects-list" id="subjects-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================== TIMER ======================== -->
+            <section class="page-section" id="timer-section">
+                <div class="dashboard-grid">
+                    <div class="card pomodoro-card"
+                        style="grid-column: span 12; max-width: 550px; margin: 0 auto; width: 100%; padding: 2.5rem;">
+                        <div class="card-header" style="justify-content: center;">
+                            <h2><i class="ri-timer-2-line"></i> Pomodoro Study Timer</h2>
+                        </div>
+                        <p style="color: var(--text-muted); margin-top: 0.75rem; font-size: 0.9rem;">25 min focus → 5
+                            min break</p>
+                        <div class="timer-display" id="timer-display">25:00</div>
+                        <div class="timer-controls">
+                            <button class="btn btn-primary" id="btn-start-timer"><i class="ri-play-fill"></i>
+                                Start</button>
+                            <button class="btn btn-outline" id="btn-pause-timer"><i class="ri-pause-fill"></i>
+                                Pause</button>
+                            <button class="btn btn-outline" id="btn-reset-timer"><i class="ri-refresh-line"></i>
+                                Reset</button>
+                        </div>
+                        <div class="timer-sessions" id="session-count">0 sessions completed</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal" id="edit-task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="ri-edit-line" style="color: var(--primary);"></i> Edit Task</h3>
+                <button class="btn-close" id="close-edit-modal"><i class="ri-close-line"></i></button>
+            </div>
+            <form id="edit-task-form">
+                <input type="hidden" id="edit-task-id">
+                <div class="form-group">
+                    <label for="edit-task-title">Task Title</label>
+                    <input type="text" id="edit-task-title" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-task-subject">Subject</label>
+                        <select id="edit-task-subject" class="form-control" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-task-priority">Priority</label>
+                        <select id="edit-task-priority" class="form-control" required>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-deadline">Deadline</label>
+                    <input type="date" id="edit-task-deadline" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-desc">Description</label>
+                    <textarea id="edit-task-desc" class="form-control"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;"><i
+                        class="ri-save-line"></i> Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <script>
+        // =============================================
+        // AUTH GUARD — Protect the dashboard
+        // =============================================
+        // Check if user session exists in LocalStorage.
+        // If not, redirect to login.html immediately.
+
+        const session = JSON.parse(localStorage.getItem('ssp_session'));
+
+        if (!session || !session.phone || !session.name) {
+            // Not authenticated — redirect to login
+            window.location.href = 'login.html';
+        } else {
+            // Authenticated — hide loader, show app
+            document.getElementById('page-loader').style.display = 'none';
+            document.getElementById('app-container').classList.add('visible');
+
+            // Pass session user to the app init
+            window.currentUser = session;
+        }
+
+        // =============================================
+        // LOGOUT
+        // =============================================
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            if (confirm('Are you sure you want to sign out?')) {
+                localStorage.removeItem('ssp_session');
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+
+    <!-- Dashboard application logic -->
+    <script src="script.js"></script>
+</body>
+
+</html>
